@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#050505">
-    <title>Archive v3.8</title>
+    <title>Archive v3.14</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,10 +16,13 @@
             --bg-color: #050505;
             --surface-color: #111111;
             --matte-bar: #161616;
-            --border-color: #222222;
-            --text-primary: #f2f2f2;
-            --text-secondary: #888888;
-            --text-meta: #666666;
+            --border-color: #262626;
+            
+            /* HIGH VISIBILITY COLORS */
+            --text-primary: #ffffff;
+            --text-secondary: #dcdcdc;
+            --text-meta: #b0b0b0;
+            
             --accent-color: #ffffff;
             --brand-red: #d32f2f;
             
@@ -34,8 +37,8 @@
             --matte-bar: #f0f0f0;
             --border-color: #e0e0e0;
             --text-primary: #111111;
-            --text-secondary: #666666;
-            --text-meta: #999999;
+            --text-secondary: #333333;
+            --text-meta: #555555;
             --accent-color: #000000;
         }
 
@@ -62,7 +65,6 @@
             transform: translateZ(0); 
             will-change: transform;
         }
-        header.hidden { transform: translateY(-100%); pointer-events: none; }
         
         .header-left { display: flex; align-items: center; height: 100%; }
 
@@ -82,7 +84,6 @@
             margin-bottom: calc(56px + var(--safe-bottom));
             overflow: hidden;
         }
-        #app-container.full-screen { margin-top: 0; }
 
         .view-section { width: 100%; height: 100%; overflow-y: auto; display: none; padding-bottom: 80px; }
         .view-section.active { display: block; }
@@ -159,12 +160,11 @@
         }
         .film-row:active { background: var(--surface-color); }
 
-        /* FIXED VISIBILITY */
         .date-box {
             width: 24px; 
             font-weight: 700; 
             font-size: 0.9rem; 
-            color: var(--text-primary); /* CHANGED FROM SECONDARY TO PRIMARY */
+            color: var(--text-primary); 
             flex-shrink: 0; 
             text-align: center;
         }
@@ -176,17 +176,25 @@
         }
 
         .row-info { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; justify-content: center; }
-        .row-title { 
-            font-size: 0.95rem; font-weight: 600; color: var(--text-primary); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            display: flex; align-items: center; gap: 6px; line-height: 1.1;
-        }
-        .title-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
         
+        .row-top-line {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.95rem; line-height: 1.1;
+            white-space: nowrap; overflow: hidden;
+        }
+        .row-title { font-weight: 600; color: var(--text-primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        
+        .row-extras { 
+            font-size: 0.8rem; color: var(--text-secondary); font-weight: 400; flex-shrink: 0; 
+            display: flex; gap: 6px; align-items: center;
+        }
+        .row-extras span { opacity: 0.7; font-size: 0.7em; }
+
         .row-meta { 
-            font-size: 0.7rem; color: var(--text-meta); 
+            font-size: 0.75rem; 
+            color: var(--text-meta); 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            font-weight: 400; letter-spacing: 0.02em;
+            font-weight: 400; letter-spacing: 0.01em;
         }
 
         .missing-dot {
@@ -343,10 +351,14 @@
             <div class="half-col"><span class="input-label">Rating</span><select id="inp-rating"><option value="">-</option></select></div>
         </div>
         <div class="input-group"><span class="input-label">Date</span><input type="date" id="inp-date"></div>
+        <div class="input-group"><span class="input-label">Genre</span><input type="text" id="inp-genre"></div>
         <div class="input-group"><span class="input-label">Director</span><input type="text" id="inp-director"></div>
         <div class="input-group"><span class="input-label">Cast</span><input type="text" id="inp-actors"></div>
         <div class="input-group"><span class="input-label">Language</span><input type="text" id="inp-language"></div>
         <div class="input-group"><span class="input-label">Runtime</span><input type="text" id="inp-runtime"></div>
+        
+        <div class="input-group"><span class="input-label">Movie ID</span><input type="text" id="inp-movie-id"></div>
+
         <div class="input-group">
             <span class="input-label">Poster</span>
             <div class="poster-select-row">
@@ -412,8 +424,10 @@
             inpDate: document.getElementById('inp-date'),
             inpDirector: document.getElementById('inp-director'),
             inpActors: document.getElementById('inp-actors'),
+            inpGenre: document.getElementById('inp-genre'),
             inpLanguage: document.getElementById('inp-language'), 
             inpRuntime: document.getElementById('inp-runtime'),
+            inpMovieId: document.getElementById('inp-movie-id'), // NEW DOM EL
             inpRewatch: document.getElementById('inp-rewatch'),
             header: document.getElementById('main-header'),
             container: document.getElementById('app-container'),
@@ -521,16 +535,32 @@
             const dotHtml = isMissing ? '<span class="missing-dot"></span>' : '';
             const posterStyle = (f.poster && f.poster !== 'N/A') ? `background-image:url(${f.poster})` : '';
 
+            // 1. Process Genre (Max 2)
+            let shortGenre = '';
+            if (f.genre) {
+                shortGenre = f.genre.split(',').slice(0, 2).join(', ');
+            }
+
+            // 2. Process Language (First one only)
+            const originalLang = f.language ? f.language.split(',')[0].trim() : '-';
+
+            // 3. Layout: Title (Year) • Runtime 
+            // 4. Details: Director • Language • Genre
             row.innerHTML = `
                 <div class="date-box">${d.getDate()}</div>
                 <div class="row-poster" style="${posterStyle}"></div>
                 <div class="row-info">
-                    <div class="row-title">
-                        <span class="title-text">${f.title}</span>
+                    <div class="row-top-line">
+                        <span class="row-title">${f.title}</span>
+                        <div class="row-extras">
+                            <span class="row-year">(${f.year})</span>
+                            <span>•</span>
+                            <span class="row-runtime">${f.runtime}</span>
+                        </div>
                         ${f.rewatch ? '<span style="color:#d32f2f;font-size:0.7em;">↺</span>' : ''}
                         ${dotHtml}
                     </div>
-                    <div class="row-meta">${f.director} • ${f.year} • ${f.language || ''} • ${f.runtime}</div>
+                    <div class="row-meta">${f.director} • ${originalLang} • ${shortGenre}</div>
                 </div>
                 <div class="row-rating">${f.rating}</div>
             `;
@@ -619,7 +649,13 @@
                 const data = await res.json();
                 if(data.Response === "True") {
                     els.inpTitle.value = data.Title; els.inpYear.value = data.Year; els.inpDirector.value = data.Director;
-                    els.inpActors.value = data.Actors; els.inpLanguage.value = data.Language; els.inpRuntime.value = data.Runtime;
+                    els.inpActors.value = data.Actors; 
+                    
+                    els.inpGenre.value = data.Genre || ''; 
+                    
+                    els.inpLanguage.value = data.Language; els.inpRuntime.value = data.Runtime;
+                    
+                    els.inpMovieId.value = data.imdbID || ''; // AUTO-FILL MOVIE ID
                     
                     const hdPoster = getHighResPoster(data.Poster);
                     posterOptions = ['', '', '', '', '']; 
@@ -675,7 +711,9 @@
                 id: editingId ? editingId : Date.now(),
                 title: els.inpTitle.value, year: els.inpYear.value, rating: els.inpRating.value,
                 dateWatched: els.inpDate.value, director: els.inpDirector.value, actors: els.inpActors.value,
+                genre: els.inpGenre.value, 
                 language: els.inpLanguage.value, runtime: els.inpRuntime.value,
+                movieId: els.inpMovieId.value, // SAVE MOVIE ID
                 poster: posterOptions[currentPosterIndex] || posterOptions[0], 
                 originalPoster: posterOptions[0], 
                 customPosters: posterOptions.slice(1), 
@@ -707,7 +745,7 @@
                 renderListOnly(sData);
                 galleryLoaded = false;
                 document.getElementById('confirm-modal').classList.remove('active');
-                closeForm(); // Close edit form if open
+                closeForm(); 
             };
         }
         window.closeConfirm = () => document.getElementById('confirm-modal').classList.remove('active');
@@ -718,7 +756,10 @@
             els.inpTitle.value = f.title; els.inpYear.value = f.year;
             els.inpRating.value = f.rating; els.inpDate.value = f.dateWatched;
             els.inpDirector.value = f.director; els.inpActors.value = f.actors;
+            
+            els.inpGenre.value = f.genre || '';
             els.inpLanguage.value = f.language || ''; els.inpRuntime.value = f.runtime;
+            els.inpMovieId.value = f.movieId || ''; // LOAD MOVIE ID
             els.inpRewatch.checked = f.rewatch;
             posterOptions = ['', '', '', '', ''];
             
@@ -738,7 +779,7 @@
             updatePosterUI();
             els.posterContainer.classList.remove('active'); 
             els.saveBtn.textContent = "Update Entry";
-            els.formDeleteBtn.classList.add('visible'); // SHOW DELETE BUTTON
+            els.formDeleteBtn.classList.add('visible'); 
             
             els.formModal.classList.add('active');
             
@@ -753,24 +794,38 @@
             editingId = null; 
             els.formTitle.textContent = "New Entry";
             els.saveBtn.textContent = "Save Entry";
-            els.formDeleteBtn.classList.remove('visible'); // HIDE DELETE BUTTON
+            els.formDeleteBtn.classList.remove('visible'); 
             
             posterOptions = ['','','','','']; currentPosterIndex=0; updatePosterUI();
             els.posterContainer.classList.remove('active'); els.afInput.value = ''; els.afYear.value = '';
             els.inpTitle.value = ''; els.inpYear.value = ''; els.inpDirector.value = '';
             els.inpActors.value = ''; els.inpRuntime.value = ''; els.inpRating.value = '';
+            els.inpGenre.value = ''; 
             els.inpLanguage.value = ''; els.inpRewatch.checked = false;
+            els.inpMovieId.value = '';
             els.formModal.classList.add('active');
         });
         window.closeForm = () => els.formModal.classList.remove('active');
 
         els.tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                els.tabs.forEach(t => t.classList.remove('active')); els.views.forEach(v => v.classList.remove('active'));
-                tab.classList.add('active'); const target = tab.getAttribute('data-target');
+                const target = tab.getAttribute('data-target');
+                
+                // REDIRECT LOGIC FOR PROFILE
+                if (target === 'view-profile') {
+                    window.location.href = 'profile.html';
+                    return;
+                }
+
+                els.tabs.forEach(t => t.classList.remove('active')); 
+                els.views.forEach(v => v.classList.remove('active'));
+                
+                tab.classList.add('active'); 
                 document.getElementById(target).classList.add('active');
-                if (target === 'view-profile') { els.header.classList.add('hidden'); els.container.classList.add('full-screen'); }
-                else { els.header.classList.remove('hidden'); els.container.classList.remove('full-screen'); }
+                
+                els.header.classList.remove('hidden'); 
+                els.container.classList.remove('full-screen'); 
+                
                 els.fab.style.display = (target === 'view-home') ? 'flex' : 'none';
                 
                 if (target === 'view-gallery' && !galleryLoaded) {
