@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#050505">
-    <title>Archive v3.14</title>
+    <title>Archive v3.15</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -356,7 +356,6 @@
         <div class="input-group"><span class="input-label">Cast</span><input type="text" id="inp-actors"></div>
         <div class="input-group"><span class="input-label">Language</span><input type="text" id="inp-language"></div>
         <div class="input-group"><span class="input-label">Runtime</span><input type="text" id="inp-runtime"></div>
-        
         <div class="input-group"><span class="input-label">Movie ID</span><input type="text" id="inp-movie-id"></div>
 
         <div class="input-group">
@@ -427,7 +426,7 @@
             inpGenre: document.getElementById('inp-genre'),
             inpLanguage: document.getElementById('inp-language'), 
             inpRuntime: document.getElementById('inp-runtime'),
-            inpMovieId: document.getElementById('inp-movie-id'), // NEW DOM EL
+            inpMovieId: document.getElementById('inp-movie-id'),
             inpRewatch: document.getElementById('inp-rewatch'),
             header: document.getElementById('main-header'),
             container: document.getElementById('app-container'),
@@ -444,7 +443,8 @@
         els.inpDate.valueAsDate = new Date();
         initRating();
         updateGalleryColsVariable();
-        const sortedData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched));
+        // PRIMARY SORT: NEWEST DATE FIRST. SECONDARY: NEWEST CREATION ID FIRST
+        const sortedData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
         renderListOnly(sortedData);
 
         // Event Delegation
@@ -568,7 +568,7 @@
         }
 
         function renderGalleryOnly() {
-            const data = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched));
+            const data = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
             const { groups, keys } = getGroupedData(data);
             els.galleryRoot.innerHTML = '';
             keys.forEach(key => {
@@ -724,7 +724,7 @@
             } else { library.push(log); }
             localStorage.setItem(STORAGE_KEY, JSON.stringify(library));
             
-            const sData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched));
+            const sData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
             renderListOnly(sData);
             galleryLoaded = false; 
             
@@ -741,7 +741,7 @@
             document.getElementById('btn-confirm-yes').onclick = () => {
                 library = library.filter(x => x.id !== id);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(library));
-                const sData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched));
+                const sData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
                 renderListOnly(sData);
                 galleryLoaded = false;
                 document.getElementById('confirm-modal').classList.remove('active');
@@ -811,7 +811,7 @@
             tab.addEventListener('click', () => {
                 const target = tab.getAttribute('data-target');
                 
-                // REDIRECT LOGIC FOR PROFILE
+                // INSTANT REDIRECT TO PROFILE
                 if (target === 'view-profile') {
                     window.location.href = 'profile.html';
                     return;
