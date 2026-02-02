@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#050505">
-    <title>Archive v3.15</title>
+    <title>Archive v3.21</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,12 +17,9 @@
             --surface-color: #111111;
             --matte-bar: #161616;
             --border-color: #262626;
-            
-            /* HIGH VISIBILITY COLORS */
             --text-primary: #ffffff;
             --text-secondary: #dcdcdc;
             --text-meta: #b0b0b0;
-            
             --accent-color: #ffffff;
             --brand-red: #d32f2f;
             
@@ -77,46 +74,79 @@
         #theme-toggle { background: transparent; border: none; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: flex-end; }
         .icon-theme { width: 18px; height: 18px; fill: var(--text-primary); }
 
+        /* --- UNIFIED TOOLBAR --- */
+        #toolbar {
+            position: sticky; top: 0; z-index: 30;
+            background: var(--bg-color);
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; gap: 10px; align-items: center;
+        }
+
+        /* Search Section */
+        .search-wrapper {
+            flex: 1; min-width: 0; position: relative; display: flex; align-items: center;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            height: 36px;
+        }
+        
+        .search-icon { width: 16px; height: 16px; fill: var(--text-meta); margin-left: 10px; flex-shrink: 0; }
+
+        #filter-input {
+            flex: 1; background: transparent; border: none;
+            color: var(--text-primary); font-size: 0.9rem;
+            padding: 0 10px; height: 100%; min-width: 0;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        #filter-input::placeholder { color: var(--text-meta); opacity: 0.7; }
+
+        #btn-clear-search {
+            width: 30px; height: 100%; background: transparent; border: none;
+            color: var(--text-meta); font-size: 1.2rem; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+        }
+        #btn-clear-search.visible { display: flex; }
+
+        /* Layout Controls */
+        #layout-controls {
+            display: none; align-items: center; gap: 8px;
+            flex-shrink: 0; 
+        }
+        #layout-controls.visible { display: flex; }
+
+        .gallery-pill {
+            display: flex; align-items: center; background: var(--surface-color);
+            border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; height: 36px;
+        }
+        .gallery-btn {
+            background: transparent; border: none; color: var(--text-primary); width: 32px; height: 100%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem;
+        }
+        .gallery-btn:active { background: var(--border-color); }
+        .gallery-val {
+            font-size: 0.8rem; font-weight: 600; color: var(--text-primary); width: 24px;
+            border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);
+            height: 100%; display: flex; align-items: center; justify-content: center; font-family: monospace;
+        }
+
         /* --- APP CONTAINER --- */
         #app-container {
             flex: 1; position: relative;
             margin-top: calc(50px + var(--safe-top));
             margin-bottom: calc(56px + var(--safe-bottom));
             overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
         .view-section { width: 100%; height: 100%; overflow-y: auto; display: none; padding-bottom: 80px; }
         .view-section.active { display: block; }
 
-        /* --- CONTROLS --- */
-        #gallery-controls {
-            position: sticky; top: 0; z-index: 20;
-            background: var(--bg-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 4px 12px; height: 36px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .gallery-ctrl-label { font-size: 0.65rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .gallery-pill {
-            display: flex; align-items: center; background: var(--surface-color);
-            border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; height: 24px;
-        }
-        .gallery-btn {
-            background: transparent; border: none; color: var(--text-primary); width: 28px; height: 100%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem;
-        }
-        .gallery-btn:active { background: var(--border-color); }
-        .gallery-val {
-            font-size: 0.75rem; font-weight: 600; color: var(--text-primary); width: 20px;
-            border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);
-            height: 100%; display: flex; align-items: center; justify-content: center; font-family: monospace;
-        }
-
-        /* --- MONTH GROUPS (ULTRA SLIM) --- */
+        /* --- MONTH GROUPS --- */
         .month-group { 
             width: 100%; display: flex; flex-direction: column; margin: 0; padding: 0;
-            content-visibility: auto; 
-            contain-intrinsic-size: 100px;
+            content-visibility: auto; contain-intrinsic-size: 100px;
         }
         
         .month-header {
@@ -135,11 +165,8 @@
         .month-right-side { display: flex; align-items: center; gap: 8px; }
         
         .month-count { 
-            font-size: 0.75rem; 
-            color: var(--text-primary); 
-            font-family: 'IBM Plex Sans', sans-serif; 
-            font-weight: 700;
-            opacity: 1;
+            font-size: 0.75rem; color: var(--text-primary); 
+            font-family: 'IBM Plex Sans', sans-serif; font-weight: 700; opacity: 1;
         }
         
         .month-arrow { width: 9px; height: 9px; fill: var(--text-secondary); transition: transform 0.2s ease; }
@@ -155,24 +182,21 @@
             gap: 12px; padding: 8px 12px;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-color);
-            cursor: pointer;
-            position: relative;
+            cursor: pointer; position: relative;
         }
         .film-row:active { background: var(--surface-color); }
 
         .date-box {
-            width: 24px; 
-            font-weight: 700; 
-            font-size: 0.9rem; 
-            color: var(--text-primary); 
-            flex-shrink: 0; 
-            text-align: center;
+            width: 24px; font-weight: 700; font-size: 0.9rem; 
+            color: var(--text-primary); flex-shrink: 0; text-align: center;
         }
 
         .row-poster {
             width: 30px; height: 45px;
             background-color: var(--surface-color); background-size: cover; background-position: center;
-            border-radius: 2px; flex-shrink: 0; border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0px; 
+            flex-shrink: 0;
         }
 
         .row-info { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; justify-content: center; }
@@ -190,16 +214,12 @@
         }
         .row-extras span { opacity: 0.7; font-size: 0.7em; }
 
+        .icon-rewatch { width: 14px; height: 14px; fill: var(--text-secondary); opacity: 0.8; flex-shrink: 0; }
+
         .row-meta { 
-            font-size: 0.75rem; 
-            color: var(--text-meta); 
+            font-size: 0.75rem; color: var(--text-meta); 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
             font-weight: 400; letter-spacing: 0.01em;
-        }
-
-        .missing-dot {
-            width: 5px; height: 5px; background-color: var(--brand-red); border-radius: 50%;
-            display: inline-block; flex-shrink: 0; 
         }
 
         .row-rating { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); min-width: 25px; text-align: right; }
@@ -215,6 +235,7 @@
         .gallery-item {
             aspect-ratio: 2/3; background-color: var(--surface-color);
             background-size: cover; background-position: center; position: relative; cursor: pointer;
+            border-radius: 0px;
         }
         .gallery-item.no-poster {
             display: flex; align-items: center; justify-content: center;
@@ -244,7 +265,8 @@
         .poster-select-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
         .poster-preview {
             width: 40px; height: 60px; background: var(--surface-color); border: 1px solid var(--border-color);
-            border-radius: 2px; background-size: cover; background-position: center; flex-shrink: 0;
+            border-radius: 0px; 
+            background-size: cover; background-position: center; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;
         }
         .poster-preview.selected { border: 2px solid var(--text-primary); box-shadow: 0 0 10px rgba(255,255,255,0.1); }
@@ -254,21 +276,9 @@
         .suggestion-thumb { width: 30px; height: 45px; background: #222; background-size: cover; background-position: center; }
         
         .form-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 2rem; }
-        
-        .btn-save {
-            width: 100%; background: var(--text-primary); color: var(--bg-color); border: none;
-            padding: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
-            border-radius: 2px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
-        }
-        
-        .btn-delete-form {
-            width: 100%; background: transparent; color: var(--brand-red); border: 1px solid var(--border-color);
-            padding: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
-            border-radius: 2px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
-            display: none; 
-        }
+        .btn-save { width: 100%; background: var(--text-primary); color: var(--bg-color); border: none; padding: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 2px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; }
+        .btn-delete-form { width: 100%; background: transparent; color: var(--brand-red); border: 1px solid var(--border-color); padding: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 2px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; display: none; }
         .btn-delete-form.visible { display: block; }
-
         #poster-url-container { display: none; margin-top: 10px; }
         #poster-url-container.active { display: block; }
 
@@ -315,16 +325,23 @@
     </header>
 
     <div id="app-container">
-        <section id="view-home" class="view-section active"></section>
-        <section id="view-gallery" class="view-section">
-            <div id="gallery-controls">
-                <span class="gallery-ctrl-label">Layout</span>
+        <div id="toolbar">
+            <div class="search-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="filter-input" placeholder="Search movies...">
+                <button id="btn-clear-search">×</button>
+            </div>
+            <div id="layout-controls">
                 <div class="gallery-pill">
                     <button class="gallery-btn" onclick="adjustGrid(1)">−</button>
                     <div class="gallery-val" id="gallery-grid-val">3</div>
                     <button class="gallery-btn" onclick="adjustGrid(-1)">+</button>
                 </div>
             </div>
+        </div>
+
+        <section id="view-home" class="view-section active"></section>
+        <section id="view-gallery" class="view-section">
             <div id="gallery-content-root"></div>
         </section>
         <section id="view-profile" class="view-section"></section>
@@ -403,6 +420,7 @@
         let editingIndex = 0;
         let editingId = null;
         let galleryLoaded = false;
+        let currentTab = 'view-home';
 
         // --- DOM ---
         const els = {
@@ -436,16 +454,41 @@
             fab: document.getElementById('add-film-btn'),
             saveBtn: document.getElementById('btn-save-log'),
             confirmModal: document.getElementById('confirm-modal'),
-            btnConfirmYes: document.getElementById('btn-confirm-yes')
+            btnConfirmYes: document.getElementById('btn-confirm-yes'),
+            // Filter elements
+            toolbar: document.getElementById('toolbar'),
+            layoutControls: document.getElementById('layout-controls'),
+            filterInput: document.getElementById('filter-input'),
+            btnClearSearch: document.getElementById('btn-clear-search')
         };
 
         // --- INIT ---
         els.inpDate.valueAsDate = new Date();
         initRating();
         updateGalleryColsVariable();
-        // PRIMARY SORT: NEWEST DATE FIRST. SECONDARY: NEWEST CREATION ID FIRST
         const sortedData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
         renderListOnly(sortedData);
+
+        // --- SEARCH BAR LOGIC ---
+        els.filterInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            els.btnClearSearch.classList.toggle('visible', val.length > 0);
+            
+            const filtered = sortedData.filter(m => m.title.toLowerCase().includes(val));
+            
+            if (currentTab === 'view-home') {
+                renderListOnly(filtered);
+            } else if (currentTab === 'view-gallery') {
+                renderGalleryWithData(filtered);
+            }
+        });
+
+        els.btnClearSearch.addEventListener('click', () => {
+            els.filterInput.value = '';
+            els.btnClearSearch.classList.remove('visible');
+            if (currentTab === 'view-home') renderListOnly(sortedData);
+            else if (currentTab === 'view-gallery') renderGalleryWithData(sortedData);
+        });
 
         // Event Delegation
         els.grid.addEventListener('click', (e) => {
@@ -480,13 +523,11 @@
             }
         }
 
-        // --- HD IMAGE UTILITY ---
         function getHighResPoster(url) {
             if (!url || url === 'N/A') return '';
             return url.replace(/._V1_.*(\.jpg|\.png|\.jpeg)$/i, "$1");
         }
 
-        // --- DATA PROCESSING ---
         function getGroupedData(data) {
             const groups = {};
             const keys = [];
@@ -504,7 +545,6 @@
             return { groups, keys };
         }
 
-        // --- RENDER LIST ---
         function renderListOnly(data) {
             const { groups, keys } = getGroupedData(data);
             els.grid.innerHTML = '';
@@ -535,17 +575,14 @@
             const dotHtml = isMissing ? '<span class="missing-dot"></span>' : '';
             const posterStyle = (f.poster && f.poster !== 'N/A') ? `background-image:url(${f.poster})` : '';
 
-            // 1. Process Genre (Max 2)
-            let shortGenre = '';
-            if (f.genre) {
-                shortGenre = f.genre.split(',').slice(0, 2).join(', ');
-            }
+            // 1. Single Genre Logic
+            const mainGenre = f.genre ? f.genre.split(',')[0].trim() : '-';
+            // 2. Single Language Logic
+            const mainLang = f.language ? f.language.split(',')[0].trim() : '-';
+            
+            // 3. Rewatch Icon (SVG)
+            const rewatchIcon = f.rewatch ? `<svg class="icon-rewatch" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>` : '';
 
-            // 2. Process Language (First one only)
-            const originalLang = f.language ? f.language.split(',')[0].trim() : '-';
-
-            // 3. Layout: Title (Year) • Runtime 
-            // 4. Details: Director • Language • Genre
             row.innerHTML = `
                 <div class="date-box">${d.getDate()}</div>
                 <div class="row-poster" style="${posterStyle}"></div>
@@ -557,18 +594,17 @@
                             <span>•</span>
                             <span class="row-runtime">${f.runtime}</span>
                         </div>
-                        ${f.rewatch ? '<span style="color:#d32f2f;font-size:0.7em;">↺</span>' : ''}
+                        ${rewatchIcon}
                         ${dotHtml}
                     </div>
-                    <div class="row-meta">${f.director} • ${originalLang} • ${shortGenre}</div>
+                    <div class="row-meta">${f.director} • ${mainLang} • ${mainGenre}</div>
                 </div>
                 <div class="row-rating">${f.rating}</div>
             `;
             return row;
         }
 
-        function renderGalleryOnly() {
-            const data = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
+        function renderGalleryWithData(data) {
             const { groups, keys } = getGroupedData(data);
             els.galleryRoot.innerHTML = '';
             keys.forEach(key => {
@@ -594,10 +630,13 @@
                 wrapper.appendChild(content);
                 els.galleryRoot.appendChild(wrapper);
             });
+        }
+
+        function renderGalleryOnly() {
+            renderGalleryWithData(sortedData);
             galleryLoaded = true;
         }
 
-        // --- UTILS ---
         window.adjustGrid = function(change) {
             galleryColumns += change;
             if (galleryColumns < 3) galleryColumns = 3;
@@ -611,7 +650,6 @@
             els.gridVal.textContent = galleryColumns;
         }
 
-        // --- SEARCH ---
         function handleSearch() {
             clearTimeout(searchTimeout);
             const val = els.afInput.value.trim();
@@ -650,24 +688,18 @@
                 if(data.Response === "True") {
                     els.inpTitle.value = data.Title; els.inpYear.value = data.Year; els.inpDirector.value = data.Director;
                     els.inpActors.value = data.Actors; 
-                    
                     els.inpGenre.value = data.Genre || ''; 
-                    
                     els.inpLanguage.value = data.Language; els.inpRuntime.value = data.Runtime;
-                    
-                    els.inpMovieId.value = data.imdbID || ''; // AUTO-FILL MOVIE ID
-                    
+                    els.inpMovieId.value = data.imdbID || ''; 
                     const hdPoster = getHighResPoster(data.Poster);
                     posterOptions = ['', '', '', '', '']; 
                     posterOptions[0] = (hdPoster && hdPoster !== 'N/A') ? hdPoster : '';
-                    
                     updatePosterUI();
                     els.inpRewatch.checked = library.some(f => f.title === data.Title);
                 }
             } catch(e) { }
         }
 
-        // --- POSTER LOGIC ---
         function updatePosterUI() {
             const s0 = document.getElementById('poster-slot-0');
             s0.style.backgroundImage = posterOptions[0] ? `url(${posterOptions[0]})` : 'none';
@@ -704,7 +736,6 @@
             updatePosterUI();
         });
 
-        // --- ACTIONS ---
         window.saveLog = function() {
             if(!els.inpTitle.value || els.inpRating.value === "") return;
             const log = {
@@ -713,7 +744,7 @@
                 dateWatched: els.inpDate.value, director: els.inpDirector.value, actors: els.inpActors.value,
                 genre: els.inpGenre.value, 
                 language: els.inpLanguage.value, runtime: els.inpRuntime.value,
-                movieId: els.inpMovieId.value, // SAVE MOVIE ID
+                movieId: els.inpMovieId.value, 
                 poster: posterOptions[currentPosterIndex] || posterOptions[0], 
                 originalPoster: posterOptions[0], 
                 customPosters: posterOptions.slice(1), 
@@ -723,13 +754,7 @@
                 const idx = library.findIndex(f => f.id === editingId); if(idx > -1) library[idx] = log;
             } else { library.push(log); }
             localStorage.setItem(STORAGE_KEY, JSON.stringify(library));
-            
-            const sData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
-            renderListOnly(sData);
-            galleryLoaded = false; 
-            
-            closeForm(); els.grid.scrollTo({top:0, behavior:'smooth'});
-            if(navigator.vibrate) navigator.vibrate(20);
+            location.reload(); 
         }
 
         window.deleteCurrentEntry = function() {
@@ -741,11 +766,7 @@
             document.getElementById('btn-confirm-yes').onclick = () => {
                 library = library.filter(x => x.id !== id);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(library));
-                const sData = [...library].sort((a,b) => new Date(b.dateWatched) - new Date(a.dateWatched) || b.id - a.id);
-                renderListOnly(sData);
-                galleryLoaded = false;
-                document.getElementById('confirm-modal').classList.remove('active');
-                closeForm(); 
+                location.reload();
             };
         }
         window.closeConfirm = () => document.getElementById('confirm-modal').classList.remove('active');
@@ -756,10 +777,9 @@
             els.inpTitle.value = f.title; els.inpYear.value = f.year;
             els.inpRating.value = f.rating; els.inpDate.value = f.dateWatched;
             els.inpDirector.value = f.director; els.inpActors.value = f.actors;
-            
             els.inpGenre.value = f.genre || '';
             els.inpLanguage.value = f.language || ''; els.inpRuntime.value = f.runtime;
-            els.inpMovieId.value = f.movieId || ''; // LOAD MOVIE ID
+            els.inpMovieId.value = f.movieId || ''; 
             els.inpRewatch.checked = f.rewatch;
             posterOptions = ['', '', '', '', ''];
             
@@ -780,7 +800,6 @@
             els.posterContainer.classList.remove('active'); 
             els.saveBtn.textContent = "Update Entry";
             els.formDeleteBtn.classList.add('visible'); 
-            
             els.formModal.classList.add('active');
             
             if(currentPosterIndex > 0) {
@@ -795,7 +814,6 @@
             els.formTitle.textContent = "New Entry";
             els.saveBtn.textContent = "Save Entry";
             els.formDeleteBtn.classList.remove('visible'); 
-            
             posterOptions = ['','','','','']; currentPosterIndex=0; updatePosterUI();
             els.posterContainer.classList.remove('active'); els.afInput.value = ''; els.afYear.value = '';
             els.inpTitle.value = ''; els.inpYear.value = ''; els.inpDirector.value = '';
@@ -810,22 +828,21 @@
         els.tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const target = tab.getAttribute('data-target');
-                
-                // INSTANT REDIRECT TO PROFILE
                 if (target === 'view-profile') {
                     window.location.href = 'profile.html';
                     return;
                 }
-
                 els.tabs.forEach(t => t.classList.remove('active')); 
                 els.views.forEach(v => v.classList.remove('active'));
-                
                 tab.classList.add('active'); 
                 document.getElementById(target).classList.add('active');
+                currentTab = target; 
                 
-                els.header.classList.remove('hidden'); 
-                els.container.classList.remove('full-screen'); 
+                // Toggle Search Input Visibility based on view
+                // Only hide layout controls, keep search
+                els.layoutControls.classList.toggle('visible', target === 'view-gallery');
                 
+                // HIDE FAB IN GALLERY
                 els.fab.style.display = (target === 'view-home') ? 'flex' : 'none';
                 
                 if (target === 'view-gallery' && !galleryLoaded) {
