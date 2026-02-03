@@ -2,379 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#050505">
-    <title>System Specs</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
+    <title>SYS_ADMIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* --- VARIABLES --- */
         :root {
-            --bg: #050505;
-            --surface: #101010;
-            --border: #222222;
-            --text-main: #e6e6e6;
-            --text-sub: #888888;
-            --text-meta: #555555;
-            --accent: #ffffff;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --danger: #f44336;
-            
-            --font-ui: 'IBM Plex Sans', -apple-system, sans-serif;
-            --font-mono: 'IBM Plex Mono', monospace;
-            
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-            --radius: 8px;
+            --bg: #050505; --surf: #111; --bord: #333; --txt: #e0e0e0; --dim: #666; --acc: #fff;
+            --ok: #00e676; --font: 'JetBrains Mono', monospace;
         }
-
-        body.light-theme {
-            --bg: #ffffff;
-            --surface: #f5f5f7;
-            --border: #e1e1e1;
-            --text-main: #1d1d1f;
-            --text-sub: #86868b;
-            --text-meta: #a1a1a6;
-            --accent: #000000;
-        }
-
+        body.light-theme { --bg: #fff; --surf: #f4f4f4; --bord: #ddd; --txt: #111; --dim: #888; --acc: #000; }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font-ui);
-            height: 100vh;
-            display: flex; flex-direction: column;
-            font-size: 14px;
-            line-height: 1.6;
-            overflow: hidden;
-            transition: background 0.3s ease;
-        }
+        body { background: var(--bg); color: var(--txt); font-family: var(--font); font-size: 12px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        a { color: inherit; text-decoration: none; border-bottom: 1px dashed var(--dim); }
 
-        /* --- NAVIGATION --- */
-        nav {
-            padding: calc(20px + var(--safe-top)) 24px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            z-index: 10;
-        }
-
-        .nav-title { font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em; text-transform: uppercase; }
+        /* HEADER */
+        header { padding: 30px 20px 15px; border-bottom: 1px solid var(--bord); display: flex; justify-content: space-between; align-items: center; }
+        .h-title::before { content: '●'; color: var(--ok); margin-right: 8px; animation: blink 2s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
+        .btn-x { background: transparent; border: 1px solid var(--bord); color: var(--txt); width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; }
         
-        .btn-close {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .btn-close:active { background: var(--border); opacity: 0.8; }
-
-        /* --- CONTENT CONTAINER --- */
-        .container {
-            flex: 1; overflow-y: auto;
-            padding: 32px 24px 80px;
-            max-width: 720px; margin: 0 auto; width: 100%;
-        }
-
-        /* --- SECTIONS --- */
-        .section-header {
-            display: flex; align-items: baseline; justify-content: space-between;
-            margin-bottom: 16px; margin-top: 48px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .section-header:first-child { margin-top: 0; }
-
-        .section-title {
-            font-size: 0.85rem; color: var(--text-main); font-weight: 600;
-            text-transform: uppercase; letter-spacing: 0.05em;
-        }
-        .section-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-meta); }
-
-        /* --- DATA GRID --- */
-        .spec-grid {
-            display: grid; grid-template-columns: 1fr; gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
+        /* LAYOUT */
+        main { flex: 1; overflow-y: auto; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; }
+        .sect { margin-bottom: 30px; }
+        .sect-h { color: var(--dim); display: block; margin-bottom: 10px; border-bottom: 1px dashed var(--bord); padding-bottom: 5px; text-transform: uppercase; }
         
-        .spec-row {
-            background: var(--bg);
-            padding: 16px 20px;
-            display: flex; justify-content: space-between; align-items: flex-start;
-        }
+        /* DATA GRID */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .panel { border: 1px solid var(--bord); background: var(--surf); padding: 10px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .k { color: var(--dim); } .v { color: var(--acc); } .code { color: var(--ok); }
 
-        .spec-key {
-            font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-sub);
-            min-width: 140px;
-        }
-        .spec-val {
-            font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-main);
-            text-align: right; word-break: break-all;
-        }
-        .spec-tag {
-            display: inline-block; padding: 2px 6px;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 3px; font-size: 0.7rem; margin-left: 4px;
-        }
-
-        /* --- STORAGE BAR --- */
-        .storage-visual {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 12px;
-        }
-        .bar-container {
-            height: 8px; width: 100%; background: var(--border);
-            border-radius: 4px; overflow: hidden; margin: 12px 0;
-        }
-        .bar-fill {
-            height: 100%; width: 0%; background: var(--text-main);
-            transition: width 0.5s ease;
-        }
-        .storage-meta {
-            display: flex; justify-content: space-between;
-            font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-sub);
-        }
-
-        /* --- STATUS TEXT --- */
-        .status-text {
-            font-size: 0.85rem; color: var(--text-sub); margin-top: 10px;
-            padding: 10px; border-left: 2px solid var(--border);
-        }
-
-        /* --- LINKS --- */
-        .link-group { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
-        .ext-link {
-            text-decoration: none; color: var(--text-main);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; background: var(--surface);
-            border: 1px solid var(--border); border-radius: var(--radius);
-        }
-        .ext-link:active { border-color: var(--text-sub); opacity: 0.8; }
-        .link-lbl { font-weight: 500; font-size: 0.9rem; }
-        .link-sub { font-size: 0.75rem; color: var(--text-sub); margin-right: 12px; }
-
-        /* --- INTRO TEXT --- */
-        .manifesto {
-            font-size: 1rem; color: var(--text-sub);
-            margin-bottom: 32px; max-width: 90%;
-        }
-
+        /* JSON DUMP */
+        .console { background: #000; border: 1px solid var(--bord); color: #aaa; padding: 10px; height: 150px; overflow: auto; white-space: pre; font-size: 11px; margin-top: 5px; }
+        body.light-theme .console { background: #eee; color: #333; }
+        
+        /* FOOTER */
+        footer { font-size: 10px; color: var(--dim); text-align: center; margin-top: 40px; padding-bottom: 20px; border-top: 1px solid var(--bord); padding-top: 10px; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <span class="nav-title">System Specs</span>
-        <button class="btn-close" onclick="window.history.back()">Close</button>
-    </nav>
+    <header>
+        <span class="h-title">ARCHIVE_SYS // MANUAL</span>
+        <button class="btn-x" onclick="window.location.href='profile.html'">✕</button>
+    </header>
 
-    <div class="container">
-        
-        <div class="manifesto">
-            Archive operates entirely on the client-side main thread. All data is persisted to the device's LocalStorage.
-        </div>
-
-        <div class="section-header">
-            <span class="section-title">Storage & Capacity</span>
-            <span class="section-meta">QUOTA ANALYTICS</span>
-        </div>
-
-        <div class="storage-visual">
-            <div class="storage-meta">
-                <span id="st-used">0 KB Used</span>
-                <span id="st-total">5120 KB Total</span>
-            </div>
-            <div class="bar-container">
-                <div class="bar-fill" id="st-bar"></div>
-            </div>
-            <div class="storage-meta">
-                <span>Local Storage</span>
-                <span id="st-percent">0%</span>
-            </div>
-        </div>
-
-        <div class="spec-grid">
-            <div class="spec-row">
-                <span class="spec-key">Entry Count</span>
-                <span class="spec-val" id="db-count">Calculating...</span>
-            </div>
-            <div class="spec-row">
-                <span class="spec-key">Avg. Entry Size</span>
-                <span class="spec-val" id="db-avg">Calculating...</span>
-            </div>
-            <div class="spec-row">
-                <span class="spec-key">Remaining Capacity</span>
-                <span class="spec-val" id="db-left">Calculating...</span>
-            </div>
-        </div>
-
-        <div class="status-text" id="export-msg">
-            Analysis: Storage levels are healthy. Regular backups are optional.
-        </div>
-
-
-        <div class="section-header">
-            <span class="section-title">Architecture</span>
-            <span class="section-meta">CLIENT SIDE</span>
-        </div>
-        <div class="spec-grid">
-            <div class="spec-row">
-                <span class="spec-key">Runtime</span>
-                <span class="spec-val">Vanilla JavaScript ES6+</span>
-            </div>
-            <div class="spec-row">
-                <span class="spec-key">Persistence</span>
-                <span class="spec-val">Window.localStorage</span>
-            </div>
-            <div class="spec-row">
-                <span class="spec-key">Performance</span>
-                <span class="spec-val"><span class="spec-tag">content-visibility</span></span>
-            </div>
-        </div>
-
-
-        <div class="section-header">
-            <span class="section-title">Browser Integration</span>
-            <span class="section-meta">WEB APIS</span>
-        </div>
-        <div class="spec-grid">
-            <div class="spec-row">
-                <span class="spec-key">Haptics</span>
-                <span class="spec-val">Navigator.vibrate()</span>
-            </div>
-            <div class="spec-row">
-                <span class="spec-key">Network</span>
-                <span class="spec-val">Fetch API (Async)</span>
-            </div>
-        </div>
-
-
-        <div class="section-header">
-            <span class="section-title">Development</span>
-            <span class="section-meta">CREDITS</span>
-        </div>
-        <div class="link-group">
-            <a href="https://github.com/suz41" target="_blank" class="ext-link">
-                <span class="link-lbl">GitHub Repository</span>
-                <span class="link-sub">Source Code</span>
-            </a>
-            <a href="https://x.com/sujalacharii" target="_blank" class="ext-link">
-                <span class="link-lbl">@sujalacharii</span>
-                <span class="link-sub">Developer</span>
-            </a>
-            <div class="spec-grid" style="margin-top: 10px;">
-                <div class="spec-row">
-                    <span class="spec-key">AI Assistant</span>
-                    <span class="spec-val">Google Gemini</span>
+    <main>
+        <div class="sect">
+            <span class="sect-h">01_TELEMETRY</span>
+            <div class="grid">
+                <div class="panel">
+                    <div class="row"><span class="k">STATUS</span><span class="v code">ONLINE</span></div>
+                    <div class="row"><span class="k">THREADS</span><span class="v" id="cpu">--</span></div>
+                    <div class="row"><span class="k">MEMORY</span><span class="v" id="mem">--</span></div>
                 </div>
-                <div class="spec-row">
-                    <span class="spec-key">Metadata API</span>
-                    <span class="spec-val">OMDb API (REST)</span>
+                <div class="panel">
+                    <div class="row"><span class="k">PLATFORM</span><span class="v" id="os">--</span></div>
+                    <div class="row"><span class="k">ENGINE</span><span class="v">VUE 3</span></div>
+                    <div class="row"><span class="k">BUILD</span><span class="v">v6.1.0</span></div>
                 </div>
             </div>
         </div>
 
-    </div>
+        <div class="sect">
+            <span class="sect-h">02_STORAGE_INSPECTOR</span>
+            <div class="row">
+                <span class="k">PROTOCOL: window.localStorage</span>
+                <span class="v" id="db-size">0 KB</span>
+            </div>
+            <div class="console" id="json-box">// INITIALIZING STREAM...</div>
+            <div style="margin-top:5px; text-align:right;">
+                <button class="btn-x" style="width:auto; padding:0 10px; font-size:10px;" onclick="copyLog()">COPY_LOG</button>
+            </div>
+        </div>
+
+        <div class="sect">
+            <span class="sect-h">03_PROJECT_MANIFEST</span>
+            <div class="panel">
+                <div class="row"><span class="k">PROJECT</span><span class="v">Archive (Manual)</span></div>
+                <div class="row"><span class="k">INPUT</span><span class="v">Custom URL / OMDb</span></div>
+                <div class="row"><span class="k">LICENSE</span><span class="v">MIT Open Source</span></div>
+                <div style="margin: 10px 0; border-bottom: 1px dashed var(--bord);"></div>
+                <div class="row"><span class="k">CONCEPT</span><span class="v"><a href="https://x.com/sujalacharii">@sujalacharii</a></span></div>
+                <div class="row"><span class="k">CODE_GEN</span><span class="v">Google Gemini AI</span></div>
+                <div class="row"><span class="k">REPO</span><span class="v"><a href="https://github.com/suz41">GitHub/suz41</a></span></div>
+            </div>
+        </div>
+
+        <footer>
+            SYS_ID: <span id="uuid"></span><br>
+            EXECUTION: CLIENT_SIDE_ONLY
+        </footer>
+    </main>
 
     <script>
-        // 1. Theme Sync
-        const THEME_KEY = 'archive_theme';
-        if (localStorage.getItem(THEME_KEY) === 'light') {
-            document.body.classList.add('light-theme');
-        }
-
-        // 2. Storage Calculator Logic
+        // --- CONFIG & THEME ---
         const DB_KEY = 'archive_v3_0_data';
-        
-        // Browser localStorage Limit is usually 5MB (approx 5,242,880 chars/bytes roughly)
-        // We use 5120 KB as a safe baseline standard.
-        const TOTAL_CAPACITY_KB = 5120; 
-
-        function analyzeStorage() {
-            const rawData = localStorage.getItem(DB_KEY) || "[]";
-            const data = JSON.parse(rawData);
-            
-            // 1. Calculate Used Size
-            // Each character in JS strings is typically 2 bytes (UTF-16), 
-            // but localStorage limits are often counted in characters (approx 5M chars).
-            // We'll calculate in KB based on character count for better readability.
-            const totalChars = JSON.stringify(localStorage).length;
-            const usedKB = (totalChars / 1024).toFixed(2);
-            
-            // 2. Calculate Percentage
-            // Assuming 5MB character limit (approx 5,242,880 characters)
-            const maxChars = 5 * 1024 * 1024; 
-            const percentUsed = ((totalChars / maxChars) * 100).toFixed(1);
-
-            // 3. UI Updates (Bars & Text)
-            document.getElementById('st-used').textContent = `${usedKB} KB Used`;
-            document.getElementById('st-total').textContent = `~5000 KB Limit`;
-            document.getElementById('st-percent').textContent = `${percentUsed}%`;
-            document.getElementById('st-bar').style.width = `${percentUsed}%`;
-
-            // Color Logic for Bar
-            const bar = document.getElementById('st-bar');
-            if (percentUsed > 90) bar.style.backgroundColor = 'var(--danger)';
-            else if (percentUsed > 75) bar.style.backgroundColor = 'var(--warning)';
-            else bar.style.backgroundColor = 'var(--success)';
-
-            // 4. Capacity Prediction
-            const entryCount = data.length;
-            document.getElementById('db-count').textContent = entryCount;
-
-            if (entryCount > 0) {
-                // Calculate size of just the movie data
-                const moviesSizeChars = rawData.length;
-                const moviesSizeKB = moviesSizeChars / 1024;
-                
-                const avgSizeKB = (moviesSizeKB / entryCount);
-                document.getElementById('db-avg').textContent = `${avgSizeKB.toFixed(2)} KB / Entry`;
-
-                // Calculate Remaining
-                const remainingKB = TOTAL_CAPACITY_KB - usedKB;
-                const remainingEntries = Math.floor(remainingKB / avgSizeKB);
-                
-                document.getElementById('db-left').textContent = `~${remainingEntries} Movies`;
-            } else {
-                document.getElementById('db-avg').textContent = "N/A";
-                document.getElementById('db-left').textContent = "Unknown";
-            }
-
-            // 5. Export Recommendation Logic
-            const msgBox = document.getElementById('export-msg');
-            if (percentUsed > 90) {
-                msgBox.textContent = "CRITICAL: Storage is almost full. Export your data immediately via Profile settings to prevent data loss.";
-                msgBox.style.borderLeftColor = "var(--danger)";
-                msgBox.style.color = "var(--danger)";
-            } else if (percentUsed > 75) {
-                msgBox.textContent = "WARNING: Storage is getting high. It is recommended to Export a backup JSON file soon.";
-                msgBox.style.borderLeftColor = "var(--warning)";
-                msgBox.style.color = "var(--warning)";
-            } else {
-                msgBox.textContent = "System Status: Storage is healthy. You have plenty of space for new entries.";
-                msgBox.style.borderLeftColor = "var(--success)";
-            }
+        if (localStorage.getItem('archive_theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
         }
 
-        analyzeStorage();
+        // --- SYSTEM METRICS ---
+        document.getElementById('os').textContent = navigator.platform.toUpperCase().slice(0,8);
+        document.getElementById('cpu').textContent = (navigator.hardwareConcurrency || 4) + ' CR';
+        document.getElementById('uuid').textContent = Math.random().toString(36).substr(2, 9).toUpperCase();
+
+        // Memory Approx
+        if(navigator.deviceMemory) document.getElementById('mem').textContent = navigator.deviceMemory + ' GB';
+        else document.getElementById('mem').textContent = "Unknown";
+
+        // --- DATA INSPECTOR ---
+        function loadData() {
+            const box = document.getElementById('json-box');
+            try {
+                const raw = localStorage.getItem(DB_KEY) || "[]";
+                const data = JSON.parse(raw);
+                const kb = (new Blob([raw]).size / 1024).toFixed(2);
+                
+                document.getElementById('db-size').textContent = kb + " KB USED";
+                
+                // Pretty Print
+                if(data.length > 0) {
+                    // Show compact version
+                    const preview = data.map(m => `[${m.id}] ${m.title}`).join('\n');
+                    box.textContent = `// TOTAL_ENTRIES: ${data.length}\n\n${preview}`;
+                } else {
+                    box.textContent = "// DATABASE EMPTY";
+                }
+            } catch(e) {
+                box.textContent = "ERR_READ_FAIL";
+            }
+        }
+        loadData();
+
+        function copyLog() {
+            const content = document.getElementById('json-box').textContent;
+            navigator.clipboard.writeText(content);
+            alert("LOG_COPIED");
+        }
     </script>
 </body>
 </html>
