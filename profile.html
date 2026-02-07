@@ -393,7 +393,7 @@
 
     <script>
         // *** CONFIG ***
-        const API_KEY = '9b03b995'; // <--- PUT YOUR API KEY HERE
+        const API_KEY = 'YOUR_KEY_HERE'; // <--- PUT YOUR API KEY HERE
         
         const DB_KEY = 'archive_v3_0_data';
         const PF_KEY = 'archive_user_profile';
@@ -751,10 +751,47 @@
             const gList = Object.entries(genres).map(([n,c])=>({n,c})).sort((a,b)=>b.c-a.c).slice(0,5);
             renderList('list-genres', gList.length?gList:[]);
             
+            // New logic for language list using the generic logic
             const langs = getTop(data,'language').map(i => i.n).join(', ');
             document.getElementById('list-langs').innerHTML = langs ? `<span class="lang-text">${langs}</span>` : '<div class="empty-msg">-</div>';
         }
-        function getTop(arr,k) { const c={}; arr.forEach(i=>{ if(!i[k]||i[k]==='N/A')return; i[k].split(',').forEach(v=>{ const x=v.trim().replace(/\s*\(.*\)/,''); if(x)c[x]=(c[x]||0)+1; }); }); return Object.entries(c).map(([n,c])=>({n,c})).sort((a,b)=>b.c-a.c).slice(0,5); }
+
+        // *** NEW RANKING LOGIC ***
+        function getTop(arr, key) {
+            const stats = {}; 
+
+            arr.forEach(movie => {
+                if (!movie[key] || movie[key] === 'N/A') return;
+                
+                // Get rating, default to 0
+                const rating = parseFloat(movie.rating) || 0;
+
+                movie[key].split(',').forEach(rawName => {
+                    // Cleanup name
+                    const name = rawName.trim().replace(/\s*\(.*\)/, '');
+                    if (!name) return;
+
+                    if (!stats[name]) stats[name] = { count: 0, totalRating: 0 };
+                    stats[name].count++;
+                    stats[name].totalRating += rating;
+                });
+            });
+
+            return Object.entries(stats)
+                .map(([name, d]) => ({
+                    n: name, 
+                    c: d.count, 
+                    avg: d.count > 0 ? (d.totalRating / d.count) : 0 
+                }))
+                .sort((a, b) => {
+                    // 1. Sort by Count (High to Low)
+                    if (b.c !== a.c) return b.c - a.c;
+                    // 2. Sort by Avg Rating (High to Low) as tie-breaker
+                    return b.avg - a.avg;
+                })
+                .slice(0, 5);
+        }
+
         function renderList(id,l) { const el=document.getElementById(id); el.innerHTML=''; if(!l.length){el.innerHTML='<div class="empty-msg">No data</div>';return;} l.forEach(i=>{ const r=document.createElement('div'); r.className='list-row'; r.innerHTML=`<span class="list-name">${i.n}</span><span class="list-count">${i.c}</span>`; el.appendChild(r); }); }
     </script>
 </body>

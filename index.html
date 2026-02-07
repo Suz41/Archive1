@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#050505">
-    <title>Archive v6.1 (Glitch Fixed)</title>
+    <title>Archive v6.5 (Red Dot Logic Fix)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,10 +13,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
     <style>
-        /* =========================================
-           1. VARIABLES (SCSS Map Equivalent)
-           ========================================= 
-        */
+        /* --- CSS VARIABLES --- */
         :root {
             --bg-color: #050505;
             --surface-color: #111111;
@@ -26,12 +23,8 @@
             --text-secondary: #dcdcdc;
             --text-meta: #b0b0b0;
             --brand-red: #d32f2f;
-            
-            /* Safe Areas */
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
-            
-            /* Dynamic Layout */
             --gallery-cols: 3;
         }
 
@@ -45,10 +38,7 @@
             --text-meta: #555555;
         }
 
-        /* =========================================
-           2. RESET & BASE
-           ========================================= 
-        */
+        /* --- LAYOUT --- */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
         
         html, body {
@@ -59,18 +49,9 @@
             font-size: 14px;
         }
 
-        #app {
-            display: flex; flex-direction: column; 
-            height: 100%; width: 100%; 
-            position: relative; overflow: hidden;
-        }
+        #app { display: flex; flex-direction: column; height: 100%; width: 100%; position: relative; overflow: hidden; }
 
-        /* =========================================
-           3. LAYOUT COMPONENTS
-           ========================================= 
-        */
-        
-        /* Header */
+        /* --- HEADER --- */
         header {
             height: calc(50px + var(--safe-top));
             padding: var(--safe-top) 16px 0 16px;
@@ -83,7 +64,7 @@
         .app-brand { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
         .icon-theme { width: 18px; height: 18px; fill: var(--text-primary); cursor: pointer; }
 
-        /* Toolbar */
+        /* --- TOOLBAR --- */
         #toolbar {
             background: var(--bg-color); padding: 8px 12px;
             border-bottom: 1px solid var(--border-color);
@@ -102,7 +83,6 @@
         }
         .btn-clear { width: 30px; height: 100%; background: transparent; border: none; color: var(--text-meta); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* Gallery Controller */
         .gallery-pill {
             display: flex; align-items: center; background: var(--surface-color);
             border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; height: 36px;
@@ -118,7 +98,7 @@
             height: 100%; display: flex; align-items: center; justify-content: center; font-family: monospace;
         }
 
-        /* Main Scroll Area */
+        /* --- SCROLL AREA --- */
         #app-content {
             flex: 1; overflow-y: auto; overflow-x: hidden;
             padding-bottom: calc(70px + var(--safe-bottom));
@@ -127,18 +107,7 @@
             overscroll-behavior-y: contain;
         }
 
-        /* =========================================
-           4. DATA VIEWS (List & Gallery)
-           ========================================= 
-        */
-
-        /* Month Headers - FIXED: Removed content-visibility to stop glitches */
-        .month-group { 
-            width: 100%; display: flex; flex-direction: column; margin: 0; padding: 0;
-            /* content-visibility: auto; <--- REMOVED THIS LINE */
-            /* contain-intrinsic-size: 100px; <--- REMOVED THIS LINE */
-        }
-
+        /* --- LIST VIEW --- */
         .month-header {
             position: sticky; top: 0;
             background: var(--matte-bar); padding: 3px 12px; 
@@ -152,12 +121,10 @@
         .month-group.closed .month-content { display: none; }
         .month-group.closed .month-arrow { transform: rotate(-90deg); }
 
-        /* List View Items */
         .film-row {
             display: flex; align-items: center; gap: 12px; padding: 8px 12px;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-color); cursor: pointer; position: relative;
-            /* content-visibility: auto; contain-intrinsic-size: 65px; */
         }
         .film-row:active { background: var(--surface-color); }
         .date-box { width: 24px; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; text-align: center; }
@@ -173,11 +140,31 @@
         .row-meta { font-size: 0.75rem; color: var(--text-meta); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; }
         .row-rating { font-size: 0.85rem; font-weight: 600; min-width: 25px; text-align: right; }
 
-        /* Gallery View Items */
+        /* WARNING DOT CSS */
+        .warning-dot {
+            width: 7px; height: 7px; 
+            background-color: var(--brand-red);
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 0 2px var(--brand-red);
+            border: 1px solid rgba(0,0,0,0.3); /* Pop against dark */
+        }
+        /* Gallery Dot Position */
+        .gallery-item .warning-dot {
+            position: absolute; top: 4px; right: 4px;
+            margin: 0;
+            border: 1px solid rgba(0,0,0,0.8);
+            z-index: 2;
+            width: 8px; height: 8px; /* Slightly larger in gallery */
+        }
+
+        /* --- GALLERY VIEW --- */
         .gallery-grid {
-            display: grid; 
-            grid-template-columns: repeat(var(--gallery-cols), 1fr);
+            display: grid; grid-template-columns: repeat(var(--gallery-cols), 1fr);
             gap: 1px; background: var(--bg-color);
+            transition: grid-template-columns 0.2s ease;
         }
         .gallery-item {
             aspect-ratio: 2/3; background: var(--surface-color);
@@ -185,20 +172,13 @@
         }
         .gallery-item.no-poster { display: flex; align-items: center; justify-content: center; padding: 5px; font-size: 0.6rem; text-align: center; color: var(--text-meta); border: 1px solid var(--border-color); }
 
-        /* =========================================
-           5. UI CONTROLS & MODALS
-           ========================================= 
-        */
-        
-        /* Floating Action Button */
+        /* --- FAB & TABS --- */
         #add-film-btn {
             position: fixed; bottom: calc(70px + var(--safe-bottom)); right: 1.5rem;
             width: 50px; height: 50px; background: var(--text-primary); color: var(--bg-color);
             border-radius: 50%; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 200; border: none; cursor: pointer;
         }
-
-        /* Bottom Tab Bar */
         .tab-bar {
             position: fixed; bottom: 0; width: 100%; height: calc(56px + var(--safe-bottom));
             background: var(--bg-color); display: flex; justify-content: space-around;
@@ -209,7 +189,7 @@
         .tab-icon { width: 20px; height: 20px; fill: currentColor; margin-bottom: 4px; }
         .tab-text { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        /* Modal / Form */
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed; inset: 0; background: var(--bg-color); z-index: 2000;
             display: flex; flex-direction: column; padding: calc(1rem + var(--safe-top)) 1.5rem 1.5rem;
@@ -223,20 +203,12 @@
             background: transparent; border: none; border-bottom: 1px solid var(--border-color);
             color: var(--text-primary); padding: 8px 0; width: 100%; font-size: 1rem; 
             font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; border-radius: 0;
-            transition: border-color 0.2s, transform 0.2s;
+            transition: border-color 0.2s;
         }
         .std-input:focus { border-bottom-color: var(--text-primary); }
         
-        /* Rating Validation Error */
-        .input-error {
-            border-bottom: 2px solid var(--brand-red) !important;
-            animation: shake 0.4s ease-in-out;
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-        }
+        .input-error { border-bottom: 2px solid var(--brand-red) !important; animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 
         .poster-select-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
         .poster-preview {
@@ -249,34 +221,23 @@
         .btn-save { width: 100%; background: var(--text-primary); color: var(--bg-color); border: none; padding: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 2px; cursor: pointer; margin-top: 2rem; }
         .btn-delete { width: 100%; background: transparent; color: var(--brand-red); border: 1px solid var(--border-color); padding: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 2px; cursor: pointer; margin-top: 10px; }
 
-        /* Auto-Fill Suggestions */
+        /* Suggestions */
         .suggestion-list { 
             position: absolute; top: 100%; left: 0; right: 0; 
             background: var(--bg-color); border: 1px solid var(--border-color); 
             max-height: 250px; overflow-y: auto; z-index: 10; margin-top:5px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        .suggestion-item { 
-            padding: 12px; border-bottom: 1px solid var(--border-color); 
-            display: flex; gap: 12px; align-items: center; cursor: pointer; 
-        }
+        .suggestion-item { padding: 12px; border-bottom: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; cursor: pointer; }
         .suggestion-item:active { background: var(--surface-color); }
         .suggestion-thumb { width: 34px; height: 50px; background: #222; background-size: cover; border:1px solid var(--border-color); flex-shrink: 0; }
         .suggestion-info { display: flex; flex-direction: column; justify-content: center; }
         .suggestion-title { font-weight: 600; font-size: 0.95rem; line-height: 1.2; color: var(--text-primary); }
         .suggestion-year { font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
 
-        /* Confirm Dialog */
-        .confirm-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 4000;
-            display: flex; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px);
-        }
-        .confirm-box {
-            width: 100%; max-width: 500px; background: var(--bg-color);
-            border-top-left-radius: 12px; border-top-right-radius: 12px;
-            padding: 24px; border-top: 1px solid var(--border-color);
-            animation: slideUp 0.2s ease-out;
-        }
+        /* Confirm Modal */
+        .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 4000; display: flex; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
+        .confirm-box { width: 100%; max-width: 500px; background: var(--bg-color); border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 24px; border-top: 1px solid var(--border-color); animation: slideUp 0.2s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); }}
         .confirm-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
         .confirm-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px; }
@@ -285,7 +246,6 @@
         .btn-cancel { background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); }
         .btn-danger-confirm { background: var(--brand-red); color: white; }
         
-        /* Global Transitions */
         .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
@@ -335,6 +295,7 @@
                         <div class="row-info">
                             <div class="row-top-line">
                                 <span class="row-title">{{ movie.title }}</span>
+                                <div v-if="hasMissingInfo(movie)" class="warning-dot"></div>
                                 <div class="row-extras">({{ movie.year }}) • {{ movie.runtime }}</div>
                                 <svg v-if="movie.rewatch" class="icon-rewatch" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
                             </div>
@@ -361,6 +322,7 @@
                          :class="{'no-poster': !movie.poster || movie.poster === 'N/A'}"
                          @click="editEntry(movie)">
                         <span v-if="!movie.poster || movie.poster === 'N/A'">{{ movie.title }}</span>
+                        <div v-if="hasMissingInfo(movie)" class="warning-dot"></div>
                     </div>
                 </div>
             </div>
@@ -510,12 +472,22 @@
 
             // Rating Options
             const ratingOpts = [];
-            for(let i=0; i<=5; i+=0.5) ratingOpts.push(i.toFixed(1));
+            for(let i=0; i<=5; i+=0.5) ratingOpts.push(Number.isInteger(i) ? i.toString() : i.toFixed(1));
 
             // LIFECYCLE
             onMounted(() => {
                 const data = localStorage.getItem(STORAGE_KEY);
-                if(data) library.value = JSON.parse(data);
+                if(data) {
+                    const parsed = JSON.parse(data);
+                    // MIGRATION: Fix ratings from "4.0" to "4"
+                    library.value = parsed.map(m => {
+                        if (m.rating) {
+                            const r = parseFloat(m.rating);
+                            m.rating = Number.isInteger(r) ? r.toString() : r.toFixed(1);
+                        }
+                        return m;
+                    });
+                }
                 
                 const cols = localStorage.getItem('archive_gallery_cols');
                 if(cols) galleryCols.value = parseInt(cols);
@@ -546,13 +518,23 @@
                 return groups;
             });
 
+            // HELPERS: RED DOT LOGIC FIXED
+            const hasMissingInfo = (m) => {
+                const isBad = (v) => {
+                    if (!v) return true; // Empty string, null, undefined
+                    const s = String(v).trim().toLowerCase();
+                    return s === '' || s === 'n/a' || s === 'null' || s === 'undefined';
+                };
+                // Check key fields
+                return isBad(m.year) || isBad(m.director) || isBad(m.rating) || isBad(m.poster);
+            };
+
             // METHODS
             const toggleTheme = () => {
                 document.body.classList.toggle('light-theme');
                 localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
             };
 
-            // FIX: Grid Limit 10
             const adjustGrid = (n) => {
                 let v = galleryCols.value - n; 
                 if(v < 3) v = 3; if(v > 10) v = 10;
@@ -596,8 +578,11 @@
                 if(ratingInput.value) ratingInput.value.classList.remove('input-error');
 
                 formData.value = JSON.parse(JSON.stringify(movie));
-                // Force rating to string for select matching
-                if(formData.value.rating) formData.value.rating = String(formData.value.rating);
+                // FIX: Normalize rating to string to match "4" vs "4.0"
+                if(formData.value.rating) {
+                    let r = parseFloat(formData.value.rating);
+                    formData.value.rating = Number.isInteger(r) ? r.toString() : r.toFixed(1);
+                }
                 
                 isEditing.value = true;
                 
@@ -609,7 +594,7 @@
                         if(movie.customPosters[i]) posterSlots.value[i+1] = movie.customPosters[i];
                     }
                 } else if (movie.poster && movie.poster !== movie.originalPoster) {
-                    posterSlots.value[1] = movie.poster; // Fallback
+                    posterSlots.value[1] = movie.poster; 
                 }
 
                 const current = movie.poster;
@@ -637,7 +622,10 @@
                 }
                 
                 const entry = { ...formData.value };
-                entry.rating = String(entry.rating);
+                
+                // Final Ensure Correct Rating Format
+                let r = parseFloat(entry.rating);
+                entry.rating = Number.isInteger(r) ? r.toString() : r.toFixed(1);
                 
                 entry.originalPoster = posterSlots.value[0];
                 entry.customPosters = posterSlots.value.slice(1);
@@ -670,12 +658,9 @@
                         const ttMatch = inputVal.match(/tt\d{7,}/);
                         
                         if (ttMatch) {
-                             // Search exact ID
                              url = `https://www.omdbapi.com/?apikey=${API_KEY}&i=${ttMatch[0]}`;
                         } else {
-                             // Normal search
                              url = `https://www.omdbapi.com/?apikey=${API_KEY}&type=movie&s=${inputVal}`;
-                             // FORCE STRING Conversion for Year Check
                              if(String(apiYear.value).length === 4) {
                                 url += `&y=${apiYear.value}`;
                              }
@@ -700,7 +685,6 @@
 
             const selectSuggestion = async (s) => {
                 try {
-                    // Always fetch full details by ID to get runtime/director etc
                     const res = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&i=${s.imdbID}`);
                     const d = await res.json();
                     
@@ -708,8 +692,11 @@
                         formData.value.title = d.Title;
                         formData.value.year = d.Year;
                         formData.value.director = d.Director;
-                        formData.value.genre = d.Genre;
-                        formData.value.language = d.Language;
+                        
+                        // FIX: Take only first Genre and Language
+                        formData.value.genre = d.Genre ? d.Genre.split(',')[0].trim() : '';
+                        formData.value.language = d.Language ? d.Language.split(',')[0].trim() : '';
+                        
                         formData.value.runtime = d.Runtime;
                         formData.value.movieId = d.imdbID; 
                         formData.value.actors = d.Actors;
@@ -753,7 +740,8 @@
                 toggleTheme, adjustGrid, toggleGroup, getHighRes, goToProfile,
                 openNewForm, editEntry, selectPosterSlot, saveEntry,
                 debouncedSearch, selectSuggestion,
-                startLongPress, cancelLongPress, confirmDelete, executeDelete
+                startLongPress, cancelLongPress, confirmDelete, executeDelete,
+                hasMissingInfo
             };
         }
     }).mount('#app');
