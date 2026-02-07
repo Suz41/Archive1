@@ -3,146 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#050505">
-    <title>SYS_ADMIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#000000">
+    <title>System Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
+        /* --- DESIGN SYSTEM --- */
         :root {
-            --bg: #050505; --surf: #111; --bord: #333; --txt: #e0e0e0; --dim: #666; --acc: #fff;
-            --ok: #00e676; --font: 'JetBrains Mono', monospace;
+            --bg: #000000;
+            --surface: #111111;
+            --border: #333333;
+            --text-main: #ffffff;
+            --text-sub: #888888;
+            --accent: #ffffff;
+            --success: #34c759;
+            --warning: #ff9f0a;
+            --danger: #ff453a;
+            
+            --font-ui: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --safe-top: env(safe-area-inset-top, 20px);
         }
-        body.light-theme { --bg: #fff; --surf: #f4f4f4; --bord: #ddd; --txt: #111; --dim: #888; --acc: #000; }
+
+        body.light-theme {
+            --bg: #ffffff;
+            --surface: #f5f5f7;
+            --border: #d1d1d6;
+            --text-main: #000000;
+            --text-sub: #636366;
+            --accent: #000000;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        body { background: var(--bg); color: var(--txt); font-family: var(--font); font-size: 12px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        a { color: inherit; text-decoration: none; border-bottom: 1px dashed var(--dim); }
+        body {
+            background: var(--bg); color: var(--text-main);
+            font-family: var(--font-ui); font-size: 13px; line-height: 1.5;
+            height: 100vh; display: flex; flex-direction: column;
+            overflow: hidden;
+        }
 
-        /* HEADER */
-        header { padding: 30px 20px 15px; border-bottom: 1px solid var(--bord); display: flex; justify-content: space-between; align-items: center; }
-        .h-title::before { content: '●'; color: var(--ok); margin-right: 8px; animation: blink 2s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
-        .btn-x { background: transparent; border: 1px solid var(--bord); color: var(--txt); width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; }
+        /* --- HEADER --- */
+        header {
+            padding: calc(20px + var(--safe-top)) 24px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg); z-index: 10;
+        }
+        .header-brand { font-family: var(--font-code); font-size: 11px; letter-spacing: 0.05em; color: var(--text-sub); }
         
-        /* LAYOUT */
-        main { flex: 1; overflow-y: auto; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; }
-        .sect { margin-bottom: 30px; }
-        .sect-h { color: var(--dim); display: block; margin-bottom: 10px; border-bottom: 1px dashed var(--bord); padding-bottom: 5px; text-transform: uppercase; }
-        
-        /* DATA GRID */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .panel { border: 1px solid var(--bord); background: var(--surf); padding: 10px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .k { color: var(--dim); } .v { color: var(--acc); } .code { color: var(--ok); }
+        .btn-close {
+            background: transparent; border: 1px solid var(--border); color: var(--text-main);
+            width: 32px; height: 32px; display: grid; place-items: center;
+            cursor: pointer; border-radius: 4px; transition: background 0.2s;
+        }
+        .btn-close:active { background: var(--surface); }
+        .btn-close svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; }
 
-        /* JSON DUMP */
-        .console { background: #000; border: 1px solid var(--bord); color: #aaa; padding: 10px; height: 150px; overflow: auto; white-space: pre; font-size: 11px; margin-top: 5px; }
-        body.light-theme .console { background: #eee; color: #333; }
+        /* --- MAIN LAYOUT --- */
+        main { flex: 1; overflow-y: auto; padding: 30px 24px 80px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+        .section-head {
+            font-size: 14px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+        }
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+
+        /* --- DASHBOARD CARDS --- */
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 40px;
+        }
         
-        /* FOOTER */
-        footer { font-size: 10px; color: var(--dim); text-align: center; margin-top: 40px; padding-bottom: 20px; border-top: 1px solid var(--bord); padding-top: 10px; }
+        .card {
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 16px; border-radius: 8px; display: flex; flex-direction: column;
+        }
+        .card.full { grid-column: span 2; }
+
+        .card-label { font-size: 11px; color: var(--text-sub); margin-bottom: 6px; }
+        .card-value { font-family: var(--font-code); font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
+        .card-sub { font-size: 11px; color: var(--text-sub); margin-top: 4px; }
+
+        /* Progress Bar */
+        .progress-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; background: var(--text-main); width: 0%; transition: width 0.6s ease; }
+
+        /* --- SYSTEM REPORT TABLE --- */
+        .report-table { border-top: 1px solid var(--border); margin-bottom: 40px; }
+        .report-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0; border-bottom: 1px solid var(--border);
+        }
+        .report-key { color: var(--text-sub); font-size: 13px; }
+        .report-val { font-family: var(--font-code); font-size: 13px; color: var(--text-main); }
+        
+        /* Links */
+        a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--text-sub); }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: auto; font-family: var(--font-code); font-size: 11px; 
+            color: var(--text-sub); opacity: 0.6; text-align: center;
+        }
+
     </style>
 </head>
 <body>
 
     <header>
-        <span class="h-title">ARCHIVE_SYS // MANUAL</span>
-        <button class="btn-x" onclick="window.location.href='profile.html'">✕</button>
+        <span class="header-brand">SYS_DASHBOARD // V6.1</span>
+        <button class="btn-close" onclick="window.location.href='profile.html'">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
     </header>
 
     <main>
-        <div class="sect">
-            <span class="sect-h">01_TELEMETRY</span>
-            <div class="grid">
-                <div class="panel">
-                    <div class="row"><span class="k">STATUS</span><span class="v code">ONLINE</span></div>
-                    <div class="row"><span class="k">THREADS</span><span class="v" id="cpu">--</span></div>
-                    <div class="row"><span class="k">MEMORY</span><span class="v" id="mem">--</span></div>
+
+        <div class="section-head">
+            <div class="status-dot"></div>
+            <span>Live Telemetry</span>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <span class="card-label">DATABASE INDEX</span>
+                <span class="card-value" id="d-count">--</span>
+                <span class="card-sub">Total Movies</span>
+            </div>
+
+            <div class="card">
+                <span class="card-label">NETWORK STATE</span>
+                <span class="card-value" id="d-net" style="color:var(--success)">ONLINE</span>
+                <span class="card-sub">OMDb API Active</span>
+            </div>
+
+            <div class="card full">
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="card-label">LOCAL STORAGE QUOTA</span>
+                    <span class="card-label" id="d-size">0 KB</span>
                 </div>
-                <div class="panel">
-                    <div class="row"><span class="k">PLATFORM</span><span class="v" id="os">--</span></div>
-                    <div class="row"><span class="k">ENGINE</span><span class="v">VUE 3</span></div>
-                    <div class="row"><span class="k">BUILD</span><span class="v">v6.1.0</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="d-bar"></div>
                 </div>
+                <span class="card-sub" style="margin-top:8px;">Allocated: 5MB Sandbox Limit</span>
             </div>
         </div>
 
-        <div class="sect">
-            <span class="sect-h">02_STORAGE_INSPECTOR</span>
-            <div class="row">
-                <span class="k">PROTOCOL: window.localStorage</span>
-                <span class="v" id="db-size">0 KB</span>
+        <div class="section-head">
+            <span>Technical Report</span>
+        </div>
+
+        <div class="report-table">
+            <div class="report-row">
+                <span class="report-key">Build Version</span>
+                <span class="report-val" id="d-ver">Scanning...</span>
             </div>
-            <div class="console" id="json-box">// INITIALIZING STREAM...</div>
-            <div style="margin-top:5px; text-align:right;">
-                <button class="btn-x" style="width:auto; padding:0 10px; font-size:10px;" onclick="copyLog()">COPY_LOG</button>
+            <div class="report-row">
+                <span class="report-key">Architecture</span>
+                <span class="report-val">SPA / Hybrid</span>
+            </div>
+            <div class="report-row">
+                <span class="report-key">State Engine</span>
+                <span class="report-val">Vue.js 3 Reactivity</span>
+            </div>
+            <div class="report-row">
+                <span class="report-key">Persistence</span>
+                <span class="report-val">LocalStorage (Client)</span>
+            </div>
+            <div class="report-row">
+                <span class="report-key">Input Method</span>
+                <span class="report-val">Manual / OMDb</span>
             </div>
         </div>
 
-        <div class="sect">
-            <span class="sect-h">03_PROJECT_MANIFEST</span>
-            <div class="panel">
-                <div class="row"><span class="k">PROJECT</span><span class="v">Archive (Manual)</span></div>
-                <div class="row"><span class="k">INPUT</span><span class="v">Custom URL / OMDb</span></div>
-                <div class="row"><span class="k">LICENSE</span><span class="v">MIT Open Source</span></div>
-                <div style="margin: 10px 0; border-bottom: 1px dashed var(--bord);"></div>
-                <div class="row"><span class="k">CONCEPT</span><span class="v"><a href="https://x.com/sujalacharii">@sujalacharii</a></span></div>
-                <div class="row"><span class="k">CODE_GEN</span><span class="v">Google Gemini AI</span></div>
-                <div class="row"><span class="k">REPO</span><span class="v"><a href="https://github.com/suz41">GitHub/suz41</a></span></div>
+        <div class="section-head">
+            <span>Project Identity</span>
+        </div>
+
+        <div class="report-table" style="border-top:none;">
+            <div class="report-row">
+                <span class="report-key">Developer</span>
+                <span class="report-val"><a href="https://x.com/sujalacharii">@sujalacharii</a></span>
+            </div>
+            <div class="report-row">
+                <span class="report-key">Code Synthesis</span>
+                <span class="report-val">Google Gemini AI</span>
+            </div>
+            <div class="report-row">
+                <span class="report-key">Repository</span>
+                <span class="report-val"><a href="https://github.com/suz41">GitHub/suz41</a></span>
             </div>
         </div>
 
         <footer>
-            SYS_ID: <span id="uuid"></span><br>
-            EXECUTION: CLIENT_SIDE_ONLY
+            SESSION ID: <span id="uuid"></span><br>
+            RENDER: CLIENT_SIDE_DOM
         </footer>
+
     </main>
 
     <script>
-        // --- CONFIG & THEME ---
-        const DB_KEY = 'archive_v3_0_data';
+        // --- 1. THEME SYNC ---
         if (localStorage.getItem('archive_theme') === 'light') {
             document.body.classList.add('light-theme');
             document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
         }
 
-        // --- SYSTEM METRICS ---
-        document.getElementById('os').textContent = navigator.platform.toUpperCase().slice(0,8);
-        document.getElementById('cpu').textContent = (navigator.hardwareConcurrency || 4) + ' CR';
-        document.getElementById('uuid').textContent = Math.random().toString(36).substr(2, 9).toUpperCase();
-
-        // Memory Approx
-        if(navigator.deviceMemory) document.getElementById('mem').textContent = navigator.deviceMemory + ' GB';
-        else document.getElementById('mem').textContent = "Unknown";
-
-        // --- DATA INSPECTOR ---
-        function loadData() {
-            const box = document.getElementById('json-box');
-            try {
-                const raw = localStorage.getItem(DB_KEY) || "[]";
-                const data = JSON.parse(raw);
-                const kb = (new Blob([raw]).size / 1024).toFixed(2);
-                
-                document.getElementById('db-size').textContent = kb + " KB USED";
-                
-                // Pretty Print
-                if(data.length > 0) {
-                    // Show compact version
-                    const preview = data.map(m => `[${m.id}] ${m.title}`).join('\n');
-                    box.textContent = `// TOTAL_ENTRIES: ${data.length}\n\n${preview}`;
-                } else {
-                    box.textContent = "// DATABASE EMPTY";
-                }
-            } catch(e) {
-                box.textContent = "ERR_READ_FAIL";
+        // --- 2. LIVE METRICS ---
+        const DB_KEY = 'archive_v3_0_data';
+        
+        // Network Check
+        function updateNet() {
+            const el = document.getElementById('d-net');
+            const dot = document.querySelector('.status-dot');
+            if (navigator.onLine) {
+                el.textContent = "ONLINE";
+                el.style.color = "var(--success)";
+                dot.style.background = "var(--success)";
+                dot.style.boxShadow = "0 0 8px var(--success)";
+            } else {
+                el.textContent = "OFFLINE";
+                el.style.color = "var(--text-sub)";
+                dot.style.background = "var(--danger)";
+                dot.style.boxShadow = "none";
             }
         }
-        loadData();
+        window.addEventListener('online', updateNet);
+        window.addEventListener('offline', updateNet);
+        updateNet();
 
-        function copyLog() {
-            const content = document.getElementById('json-box').textContent;
-            navigator.clipboard.writeText(content);
-            alert("LOG_COPIED");
+        // Storage Check
+        try {
+            const raw = localStorage.getItem(DB_KEY) || "[]";
+            const data = JSON.parse(raw);
+            const bytes = new Blob([raw]).size;
+            
+            document.getElementById('d-count').textContent = data.length;
+            document.getElementById('d-size').textContent = (bytes/1024).toFixed(2) + ' KB Used';
+            
+            const pct = Math.min(((bytes / (5*1024*1024)) * 100), 100);
+            document.getElementById('d-bar').style.width = pct + '%';
+        } catch(e) {
+            document.getElementById('d-count').textContent = "ERR";
         }
+
+        // --- 3. DYNAMIC VERSION FETCH ---
+        async function fetchVersion() {
+            const el = document.getElementById('d-ver');
+            try {
+                let res = await fetch('index.html');
+                if(!res.ok) res = await fetch('6.1vupdated.html');
+                
+                if(res.ok) {
+                    const txt = await res.text();
+                    const match = txt.match(/<title>(.*?)<\/title>/i);
+                    if(match) {
+                        let v = match[1].replace('Archive', '').trim();
+                        v = v.split('(')[0].trim();
+                        el.textContent = v || "v6.1";
+                    } else { el.textContent = "v6.1"; }
+                } else { el.textContent = "v6.1"; }
+            } catch(e) { el.textContent = "v6.1"; }
+        }
+        fetchVersion();
+
+        // UUID
+        document.getElementById('uuid').textContent = Math.random().toString(36).substring(2, 10).toUpperCase();
+
     </script>
 </body>
 </html>
