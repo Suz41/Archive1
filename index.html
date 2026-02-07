@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#050505">
-    <title>Archive v6.5 (Red Dot Logic Fix)</title>
+    <title>Archive v6.6 (Single Genre Enforced)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,15 +149,14 @@
             margin-left: 6px;
             flex-shrink: 0;
             box-shadow: 0 0 2px var(--brand-red);
-            border: 1px solid rgba(0,0,0,0.3); /* Pop against dark */
+            border: 1px solid rgba(0,0,0,0.3);
         }
-        /* Gallery Dot Position */
         .gallery-item .warning-dot {
             position: absolute; top: 4px; right: 4px;
             margin: 0;
             border: 1px solid rgba(0,0,0,0.8);
             z-index: 2;
-            width: 8px; height: 8px; /* Slightly larger in gallery */
+            width: 8px; height: 8px;
         }
 
         /* --- GALLERY VIEW --- */
@@ -479,11 +478,20 @@
                 const data = localStorage.getItem(STORAGE_KEY);
                 if(data) {
                     const parsed = JSON.parse(data);
-                    // MIGRATION: Fix ratings from "4.0" to "4"
+                    // MIGRATION: Fix ratings AND Genres/Languages
                     library.value = parsed.map(m => {
+                        // Rating Fix
                         if (m.rating) {
                             const r = parseFloat(m.rating);
                             m.rating = Number.isInteger(r) ? r.toString() : r.toFixed(1);
+                        }
+                        // Genre Fix (Keep 1st)
+                        if (m.genre && m.genre.includes(',')) {
+                            m.genre = m.genre.split(',')[0].trim();
+                        }
+                        // Language Fix (Keep 1st)
+                        if (m.language && m.language.includes(',')) {
+                            m.language = m.language.split(',')[0].trim();
                         }
                         return m;
                     });
@@ -518,11 +526,12 @@
                 return groups;
             });
 
-            // HELPERS: RED DOT LOGIC FIXED
+            // HELPERS: RED DOT LOGIC FIXED (Handles N/A)
             const hasMissingInfo = (m) => {
                 const isBad = (v) => {
                     if (!v) return true; // Empty string, null, undefined
                     const s = String(v).trim().toLowerCase();
+                    // Check for standard "missing" flags
                     return s === '' || s === 'n/a' || s === 'null' || s === 'undefined';
                 };
                 // Check key fields
@@ -626,6 +635,11 @@
                 // Final Ensure Correct Rating Format
                 let r = parseFloat(entry.rating);
                 entry.rating = Number.isInteger(r) ? r.toString() : r.toFixed(1);
+                
+                // Clean Genre (keep only first)
+                if (entry.genre) entry.genre = entry.genre.split(',')[0].trim();
+                // Clean Language (keep only first)
+                if (entry.language) entry.language = entry.language.split(',')[0].trim();
                 
                 entry.originalPoster = posterSlots.value[0];
                 entry.customPosters = posterSlots.value.slice(1);
